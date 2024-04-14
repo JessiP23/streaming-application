@@ -1,19 +1,15 @@
-import React, {useEffect} from "react";
-import BroadcastPage from './broadcastService';
-import WebSocketComponent from "./WebSocket";
+import React from "react";
+import StreamerSecretCodeForm from "./StreamerSecretCodeForm";
+import StreamTransferForm from "./StreamTransferForm";
 
-function InitBroadcast({ streamDetails }) {
-    useEffect(() => {
-        BroadcastPage(streamDetails);
-    }, [streamDetails]);
-
+function StreamViewerPage({ streamDetails }) {
     return (
         <div>
-            <h2>Live Broadcast</h2>
-            <div id="twitch-embed"></div>
-            <WebSocketComponent />
+            <h2>Stream Viewer</h2>
+            <StreamerSecretCodeForm />
+            <StreamTransferForm />
         </div>
     );
 }
 
-export default InitBroadcast;
+export default StreamViewerPage;

@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const http = require('http');
 const mongoose = require('mongoose');
 const MONGODB_URI = 'mongodb://localhost:27017/streaming_app';
@@ -9,23 +10,66 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
 }));
 
-const streams = [
-    {id: 1, title: 'Stream 1', description: 'Description for Stream 1'},
-    {id: 2, title: 'Stream 2', description: 'Description for Stream 2'},
-    {id: 3, title: 'Stream 3', description: 'Description for Stream 3'},
-];
+//Storage for streams with database in production.
+const streamers = [];
+
+app.post('/api/start-stream', (req, res) => {
+    const { title, description, category } = req.body;
+
+    if (!title || !description || !category) {
+        return res.status(400).json({ error: 'Title, description, and category are required' });
+    }
+
+    const streamId = Math.random().toString(36).substring(7);
+
+    const newStream = {
+        id: streamId,
+        title,
+        description,
+        category,
+        owner: null,
+        viewers: [],
+        createdAt: new Date()
+    };
+
+    if (!streams) {
+        var streams = [];
+    }
+
+    streams.push(newStream);
+
+    res.status(201).json({ streamId });
+});
+
+app.post('/api/generate-secret-code', (req, res) => {
+    const { streamerId } = req.body;
+    if (!streamers[streamerId]){
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const secretCode = generateSecretCode();
+
+    streamers[streamerId].secretCode = secretCode;
+
+    res.json({ secretCode });
+});
+
+function generateSecretCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
 
 //Generate unique code for transfer streaming
 function generateTransferCode() {
     return Math.random().toString(36).substring(2,8).toUpperCase();
 }
 
-app.get('/streams/transfer', async (req, res) => {
+app.get('/streams/:id/transfer', async (req, res) => {
     const { id } = req.params;
     const stream = streams.find(stream => stream.id == id);
     if(!stream) {
@@ -39,7 +83,7 @@ app.get('/streams/transfer', async (req, res) => {
     return res.json({ transferCode });
 });
 
-app.post('/streams/transfer', (req, res) => {
+app.post('/streams/:id/transfer', (req, res) => {
     const { id } = req.params;
     const {transferCode} = req.body;
     const stream = streams.find(stream => stream.id == id);

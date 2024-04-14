@@ -23,7 +23,7 @@ function StreamList() {
     };
 
     const handleStreamTransfer = () => {
-        axios.post('http://localhost:5000/streams/transfer', { streamId: selectedStream.id, code: transferCode })
+        axios.post(`http://localhost:5000/streams/${selectedStream.id}/transfer`, { transferCode })
             .then(response => {
                 setTransferSuccess(true); // Setting transferSuccess to true upon successful transfer
             })

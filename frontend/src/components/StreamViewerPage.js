@@ -1,13 +1,17 @@
 import React from "react";
 import BroadcastPage from "./BroadcastPage";
-import WebSocketComponent from "./WebSocket";
-
-function StreamViewerPage({ streamDetails }) {
+import { Routes, Route } from 'react-router-dom';
+import StreamerSecretCodeForm from "./StreamerSecretCodeForm";
+import StreamTransferForm from "./StreamTransferForm";
+function StreamViewerPage() {
     return (
         <div>
             <h2>Stream Viewer</h2>
-            <BroadcastPage streamDetails={streamDetails} />
-            <WebSocketComponent />
+            <StreamerSecretCodeForm />
+            <StreamTransferForm />
+            <Routes>
+                <Route path="/stream-viewer/:streamDetails" element={<BroadcastPage />} />
+            </Routes>
         </div>
     );
 }

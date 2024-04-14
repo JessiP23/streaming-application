@@ -1,23 +1,51 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import StreamList from './components/StreamList';
 import StreamViewerPage from './components/StreamViewerPage';
 import ViewerDashboard from './components/ViewerDashboard';
 import Home from './components/Home';
+import StreamTransferForm from './components/StreamTransferForm';
+import StreamerSecretCodeForm from './components/StreamerSecretCodeForm';
+import StreamInitiationModal from './components/StreamInitiationModal';
+import StreamDetails from './components/StreamDetails';
 
 function App() {
   return(
     <Router>
-      <Routes>
-        {/* Define routes with valid components */}
-        <Route exact path="/" element={<Home />} />
-        <Route path="/streams" element={<StreamList />} />
-        <Route path="/stream-viewer" element={<StreamViewerPage />} />
-        <Route path="/viewers-dashboard" element={<ViewerDashboard />} />
-      </Routes>
+      <div>
+        <ul> 
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/streams">Streams</Link>
+          </li>
+          <li>
+            <Link to="/viewers-dashboard">Viewers Dashboard</Link>
+          </li>
+          <li>
+            <Link to="/stream-transfer">Stream Transfer</Link>
+          </li>
+          <li>
+            <Link to="/streams-initiation">Stream Initiation</Link>
+          </li>
+        </ul>
+        <Routes>
+          <Route exact path="/" element={<Home />} />
+          <Route path="/streams" element={<StreamList />} />
+          <Route path="/stream-viewer/*" element={<StreamViewerPage />} />
+          <Route path="/viewers-dashboard" element={<ViewerDashboard />} />
+          <Route path="/stream-transfer" element={<StreamTransferForm />} />
+          <Route path="/streamer-secret-code" element={<StreamerSecretCodeForm />} />
+          <Route path='/streams-initiation' element={<StreamInitiationModal />} />
+          <Route path='/stream-details/:streamId' element={<StreamDetails />}></Route>
+        </Routes>
+      </div>
     </Router>
   )
 }
 
 export default App;
+
+

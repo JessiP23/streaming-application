@@ -39,7 +39,7 @@ function App() {
           <Route path="/stream-transfer" element={<StreamTransferForm />} />
           <Route path="/streamer-secret-code" element={<StreamerSecretCodeForm />} />
           <Route path='/streams-initiation' element={<StreamInitiationModal />} />
-          <Route path='/stream-details/:streamId' element={<StreamDetails />}></Route>
+          <Route path='/stream-details/:streamId' element={<StreamDetails />} />
         </Routes>
       </div>
     </Router>

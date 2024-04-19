@@ -1,35 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import StreamDetails from './StreamDetails';
+import { Link } from 'react-router-dom';
 
 function StreamList() {
     const [streams, setStreams] = useState([]);
-    const [selectedStream, setSelectedStream] = useState(null);
-    const [transferCode, setTransferCode] = useState('');
-    const [transferSuccess, setTransferSuccess] = useState(false); // Using transferSuccess state
 
     useEffect(() => {
-        axios.get('http://localhost:5000/streams')
-            .then(response => {
-                setStreams(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching streams:', error);
-            });
+        fetchStreams();
     }, []);
 
-    const handleStreamSelect = stream => {
-        setSelectedStream(stream);
-    };
-
-    const handleStreamTransfer = () => {
-        axios.post(`http://localhost:5000/streams/${selectedStream.id}/transfer`, { transferCode })
-            .then(response => {
-                setTransferSuccess(true); // Setting transferSuccess to true upon successful transfer
-            })
-            .catch(error => {
-                console.error('Error transferring stream:', error);
-            });
+    const fetchStreams = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/streams');
+            setStreams(response.data);
+        } catch (error) {
+            console.error('Error fetching streams:', error);
+        }
     };
 
     return (
@@ -37,21 +23,16 @@ function StreamList() {
             <h2>Stream List</h2>
             <ul>
                 {streams.map(stream => (
-                    <li key={stream.id} onClick={() => handleStreamSelect(stream)}>
-                        {stream.title}
+                    <li key={stream.id}>
+                        <Link to={`/stream-details/${stream.id}`}>
+                            <h3>{stream.title}</h3>
+                        </Link>
+                        <p>{stream.description}</p>
                     </li>
                 ))}
             </ul>
-            {selectedStream && <StreamDetails stream={selectedStream} />}
-            {selectedStream && (
-                <div>
-                    <input type='text' value={transferCode} onChange={e => setTransferCode(e.target.value)} placeholder='Enter Transfer Code' />
-                    <button onClick={handleStreamTransfer}>Transfer Stream</button>
-                    {transferSuccess && <p>Stream transferred successfully!</p>} {/* Conditionally rendering based on transferSuccess */}
-                </div>
-            )}
         </div>
-    )
+    );
 }
 
 export default StreamList;

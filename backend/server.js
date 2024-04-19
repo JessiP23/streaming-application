@@ -38,10 +38,6 @@ app.post('/api/start-stream', (req, res) => {
         createdAt: new Date()
     };
 
-    if (!streams) {
-        var streams = [];
-    }
-
     streams.push(newStream);
 
     res.status(201).json({ streamId });

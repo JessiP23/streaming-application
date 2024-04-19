@@ -4,7 +4,6 @@ import './StreamStart.css';
 
 function StreamStart() {
     const [streaming, setStreaming] = useState(false);
-    const [transferCode, setTransferCode] = useState('');
     const [stream, setStream] = useState(null);
     const [sharingScreen, setSharingScreen] = useState(false);
     const videoRef = useRef(null);
@@ -51,12 +50,7 @@ function StreamStart() {
                     </div>
                 )}
             </div>
-            {transferCode && (
-                <div>
-                    <p>Transfer Code: {transferCode}</p>
-                    <p>Share this code if you desire to transfer the stream to anyone else.</p>
-                </div>
-            )}
+            
         </div>
     );
 }

@@ -9,6 +9,7 @@ import StreamTransferForm from './components/StreamTransferForm';
 import StreamerSecretCodeForm from './components/StreamerSecretCodeForm';
 import StreamInitiationModal from './components/StreamInitiationModal';
 import StreamDetails from './components/StreamDetails';
+import StreamPage from './components/StreamPage';
 
 function App() {
   return(
@@ -34,6 +35,7 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/streams" element={<StreamList />} />
+          <Route path="/stream-details/:id" component={StreamPage} />
           <Route path="/stream-viewer/*" element={<StreamViewerPage />} />
           <Route path="/viewers-dashboard" element={<ViewerDashboard />} />
           <Route path="/stream-transfer" element={<StreamTransferForm />} />

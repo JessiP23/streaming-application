@@ -1,6 +1,4 @@
-import React, {useState, useRef} from 'react';
-import { v4 as uuid } from 'uuid';
-import './StreamStart.css';
+import React, { useState, useRef, useEffect } from 'react';
 
 function StreamStart() {
     const [streaming, setStreaming] = useState(false);
@@ -8,18 +6,22 @@ function StreamStart() {
     const [sharingScreen, setSharingScreen] = useState(false);
     const videoRef = useRef(null);
 
-    //Camera setup video and microphone
+    useEffect(() => {
+        if (videoRef.current && stream) {
+            videoRef.current.srcObject = stream;
+        }
+    }, [stream]);
+
     const handleStartStream = async () => {
         try {
             let mediaStream;
             if (sharingScreen) {
-                mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+                mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
             } else {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             }
             setStream(mediaStream);
             setStreaming(true);
-            videoRef.current && (videoRef.current.srcObject = mediaStream);
         } catch (error) {
             console.error('Error accessing camera and microphone:', error);
         }
@@ -45,12 +47,11 @@ function StreamStart() {
                     </>
                 ) : (
                     <div className='video-container'>
-                        <video ref={videoRef} autoPlay />
+                        <video ref={videoRef} autoPlay muted />
                         <button onClick={handleStopStream}>Stop Streaming</button>
                     </div>
                 )}
             </div>
-            
         </div>
     );
 }

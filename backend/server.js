@@ -8,6 +8,7 @@ const socketIO = require('socket.io');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+const Stream = require('./models/Stream');
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -19,28 +20,29 @@ app.use(cors({
 //Storage for streams with database in production.
 const streamers = [];
 
-app.post('/api/start-stream', (req, res) => {
+app.post('/api/start-stream', async (req, res) => {
     const { title, description, category } = req.body;
 
     if (!title || !description || !category) {
         return res.status(400).json({ error: 'Title, description, and category are required' });
     }
 
-    const streamId = Math.random().toString(36).substring(7);
+    try {
+        const newStream = new Stream({
+            title, 
+            description,
+            category,
+            owner: null,
+            viewers: [],
+            createdAt: new Date()
+        });
 
-    const newStream = {
-        id: streamId,
-        title,
-        description,
-        category,
-        owner: null,
-        viewers: [],
-        createdAt: new Date()
-    };
-
-    streams.push(newStream);
-
-    res.status(201).json({ streamId });
+        const savedStream = await newStream.save();
+        res.status(201).json({ streamId: savedStream._id });
+    } catch (error) {
+        console.error('Error creating stream:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 app.post('/api/generate-secret-code', (req, res) => {

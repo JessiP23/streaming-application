@@ -17,15 +17,9 @@ app.use(cors({
     credentials: true
 }));
 
-//Storage for streams with database in production.
-const streamers = [];
 
 app.post('/api/start-stream', async (req, res) => {
     const { title, description, category } = req.body;
-
-    if (!title || !description || !category) {
-        return res.status(400).json({ error: 'Title, description, and category are required' });
-    }
 
     try {
         const newStream = new Stream({
@@ -38,7 +32,7 @@ app.post('/api/start-stream', async (req, res) => {
         });
 
         const savedStream = await newStream.save();
-        res.status(201).json({ streamId: savedStream._id });
+        res.status(201).json(savedStream);
     } catch (error) {
         console.error('Error creating stream:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -66,6 +60,16 @@ function generateSecretCode() {
 function generateTransferCode() {
     return Math.random().toString(36).substring(2,8).toUpperCase();
 }
+
+app.get('/api/streams', async (req, res) => {
+    try {
+        const streams = await Stream.find();
+        res.json(streams);
+    } catch (error) {
+        console.error('Error fetching streams:', error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+})
 
 app.get('/streams/:id/transfer', async (req, res) => {
     const { id } = req.params;

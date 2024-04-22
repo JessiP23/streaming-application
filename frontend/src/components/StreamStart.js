@@ -1,9 +1,13 @@
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 
 function StreamStart() {
     const [streaming, setStreaming] = useState(false);
     const [stream, setStream] = useState(null);
     const [sharingScreen, setSharingScreen] = useState(false);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
     const videoRef = useRef(null);
 
     useEffect(() => {
@@ -22,6 +26,13 @@ function StreamStart() {
             }
             setStream(mediaStream);
             setStreaming(true);
+
+            const streamData = {
+                title: title,
+                description: description,
+                category: category,
+            };
+            await axios.post('http://localhost:5000/api/start-stream', streamData); 
         } catch (error) {
             console.error('Error accessing camera and microphone:', error);
         }
@@ -41,6 +52,12 @@ function StreamStart() {
             <div>
                 {!streaming ? (
                     <>
+                        <label htmlFor='title'>Title:</label>
+                        <input type='text' id='title' value={title}  onChange={(e) => setTitle(e.target.value)} />\
+                        <label htmlFor='description'>Description:</label>
+                        <input type='text' id='description' value={description} onChange={(e) => setDescription(e.target.value)} />
+                        <label htmlFor='category'>Category:</label>
+                        <input type='text' id='category' value={category} onChange={(e) => setCategory(e.target.value)} />
                         <button onClick={handleStartStream}>Start Streaming</button>
                         <label htmlFor='shareScreen'>Share Screen</label>
                         <input type='checkbox' id='shareScreen' checked={sharingScreen} onChange={() => setSharingScreen(!sharingScreen)} />

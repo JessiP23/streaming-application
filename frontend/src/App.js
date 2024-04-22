@@ -35,8 +35,8 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/streams" element={<StreamList />} />
-          <Route path="/stream-details/:id" component={StreamPage} />
-          <Route path="/stream-viewer/*" element={<StreamViewerPage />} />
+          <Route path="/stream-details/:id" element={<StreamPage />} />
+          <Route path="/streams/:streamId" element={<StreamViewerPage />} />
           <Route path="/viewers-dashboard" element={<ViewerDashboard />} />
           <Route path="/stream-transfer" element={<StreamTransferForm />} />
           <Route path="/streamer-secret-code" element={<StreamerSecretCodeForm />} />

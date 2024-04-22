@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const Stream = require('../models/Stream');
 
 // Initialize streams array
 let streams = [
@@ -8,21 +9,27 @@ let streams = [
     { id: 3, title: 'Stream 3', description: 'Description for Stream 3' }
 ];
 
-// Route for fetching streams
-router.get('/', (req, res) => {
-    res.json(streams);
+router.get('/', async (req, res) => {
+    try {
+        const streams = await Stream.find();
+        res.json(streams);
+    } catch (error) {
+        console.error('Error fetching streams:', error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
 // Route for creating a new stream
-router.post('/create', (req, res) => {
+router.post('/create', async (req, res) => {
     const { title, description } = req.body;
-    const newStream = {
-        id: streams.length + 1, // Generate unique ID for the new stream
-        title,
-        description
-    };
-    streams.push(newStream); // Add the new stream to the streams array
-    res.status(201).json(newStream); // Return the newly created stream
+    try {
+        const newStream = new Stream({ title, description });
+        const savedStream = await newStream.save();
+        res.status(201).json(savedStream);
+    } catch (error) {
+        console.error('Error creating stream:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 module.exports = router;

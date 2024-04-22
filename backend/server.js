@@ -9,13 +9,21 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const Stream = require('./models/Stream');
-
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
 }));
+
+const streamSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    category: String,
+    owner: String,
+    viewers: [String],
+    createdAt: {type: Date, default: Date.now},
+});
 
 
 app.post('/api/start-stream', async (req, res) => {

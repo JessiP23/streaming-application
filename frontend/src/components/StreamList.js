@@ -23,7 +23,7 @@ function StreamList() {
             <h2>Stream List</h2>
             <ul>
                 {streams.map(stream => (
-                    <li key={stream.id}>
+                    <li key={stream._id}> {/* Assuming _id is unique */}
                         <Link to={`/streams/${stream._id}`}>
                             <h3>{stream.title}</h3>
                         </Link>

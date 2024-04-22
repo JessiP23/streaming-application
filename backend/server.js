@@ -25,6 +25,8 @@ const streamSchema = new mongoose.Schema({
     createdAt: {type: Date, default: Date.now},
 });
 
+const Stream = mongoose.model('Stream', streamSchema);
+
 
 app.post('/api/start-stream', async (req, res) => {
     const { title, description, category } = req.body;
@@ -40,6 +42,7 @@ app.post('/api/start-stream', async (req, res) => {
         });
 
         const savedStream = await newStream.save();
+        io.emit('newStream', savedStream);
         res.status(201).json(savedStream);
     } catch (error) {
         console.error('Error creating stream:', error);

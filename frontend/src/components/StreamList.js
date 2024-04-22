@@ -7,6 +7,8 @@ function StreamList() {
 
     useEffect(() => {
         fetchStreams();
+        const intervalId = setInterval(fetchStreams, 5000);
+        return () => clearInterval(intervalId);
     }, []);
 
     const fetchStreams = async () => {

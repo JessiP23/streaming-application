@@ -1,16 +1,14 @@
 import React from "react";
 import BroadcastPage from "./BroadcastPage";
-import { Routes, Route } from 'react-router-dom';
-import StreamerSecretCodeForm from "./StreamerSecretCodeForm";
-import StreamTransferForm from "./StreamTransferForm";
+import { Routes, Route, useParams } from 'react-router-dom';
+
 function StreamViewerPage() {
+    const { streamId } = useParams();
     return (
         <div>
             <h2>Stream Viewer</h2>
-            <StreamerSecretCodeForm />
-            <StreamTransferForm />
             <Routes>
-                <Route path="/stream-viewer/:streamDetails" element={<BroadcastPage />} />
+                <Route path="/stream-viewer/:streamDetails/*" element={<BroadcastPage />} />
             </Routes>
         </div>
     );

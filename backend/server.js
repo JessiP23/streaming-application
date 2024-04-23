@@ -9,24 +9,13 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const Stream = require('./models/Stream');
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
 }));
-
-const streamSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    category: String,
-    owner: String,
-    viewers: [String],
-    createdAt: {type: Date, default: Date.now},
-});
-
-const Stream = mongoose.model('Stream', streamSchema);
-
 
 app.post('/api/start-stream', async (req, res) => {
     const { title, description, category } = req.body;
@@ -125,6 +114,7 @@ io.on('error', (err) => {
     console.error('Socket error:', err);
 });
 
+
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -137,7 +127,6 @@ mongoose.connect(MONGODB_URI, {
 const streamRoutes = require('./routes/streamRoutes');
 app.use('/streams', streamRoutes);
 
-const PORT = 5000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(5000, () => {
+    console.log(`Server is running on port 5000`);
 });

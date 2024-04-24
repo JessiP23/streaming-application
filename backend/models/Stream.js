@@ -6,7 +6,8 @@ const streamSchema = new mongoose.Schema({
     category: { type: String, required: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Assuming a User model exists
     viewers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Assuming a User model exists
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    streamUrl: {type: String},
 });
 
 const Stream = mongoose.model('Stream', streamSchema);

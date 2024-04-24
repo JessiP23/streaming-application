@@ -9,6 +9,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const Stream = require('./models/Stream');
+const { v4: uuidv4 } = require('uuid');
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -18,21 +19,23 @@ app.use(cors({
 }));
 
 app.post('/api/start-stream', async (req, res) => {
-    const { title, description, category } = req.body;
+    const { title, description, category, streamUrl } = req.body;
 
     try {
+        const streamId = uuidv4();
         const newStream = new Stream({
+            streamId,
             title, 
             description,
             category,
             owner: null,
             viewers: [],
-            createdAt: new Date()
+            createdAt: new Date(),
         });
 
         const savedStream = await newStream.save();
         io.emit('newStream', savedStream);
-        res.status(201).json(savedStream);
+        res.status(201).json({ streamId });
     } catch (error) {
         console.error('Error creating stream:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -71,37 +74,61 @@ app.get('/api/streams', async (req, res) => {
     }
 })
 
-app.get('/streams/:id/transfer', async (req, res) => {
+app.get('/streams/:id', async (req, res) => {
     const { id } = req.params;
-    const stream = streams.find(stream => stream.id == id);
-    if(!stream) {
-        return res.status(404).json({ error: 'Stream not found' });
+    try {
+        const stream = await Stream.findById(id);
+        if (!stream) {
+            return res.status(404).json({ error: "Stream not found" });
+        }
+        res.json(stream);
+    } catch (error) {
+        console.error('Error fetching stream data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-    if (stream.transferCode) {
-        return res.status(400).json({ error: 'Stream already has a transfer code' });
-    }
-    const transferCode = generateTransferCode();
-    stream.transferCode = transferCode;
-    return res.json({ transferCode });
 });
 
-app.post('/streams/:id/transfer', (req, res) => {
+app.get('/streams/:id/transfer', async (req, res) => {
     const { id } = req.params;
-    const {transferCode} = req.body;
-    const stream = streams.find(stream => stream.id == id);
-    if (!stream) {
-        return res.status(404).json({ error: 'Stream not found' });
+    try {
+        const stream = await Stream.findById(id);
+        if(!stream) {
+            return res.status(404).json({ error: "Stream not found" });
+        }
+        if (stream.transferCode){
+            return res.status(400).json({ error: "Stream already has a transfer code" });
+        }
+        const trasnferCode = generateTransferCode();
+        stream.transferCode = transferCode;
+        await stream.save();
+        return res.json({ transferCode });
+    } catch (error) {
+        console.error('Error generating transfer code:', error);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
-    if (!stream.transferCode || stream.transferCode !== transferCode) {
-        return res.status(400).json({ error: 'Invalid transfer code' });
+});
+
+app.post('/streams/:id/transfer', async (req, res) => {
+    const { id } = req.params;
+    const { transferCode } = req.body;
+    try {
+        const stream = await Stream.findById(id);
+        if (!stream) {
+            return res.status(404).json({ error: 'Stream not found' });
+        }
+        if (!stream.transferCode || stream.transferCode !== transferCode) {
+            return res.status(400).json({ error: 'Invalid transfer code' });
+        }
+        stream.owner = 'NewOwner';
+        stream.transferCode = null;
+        await stream.save();
+        io.emit('streamUpdate', { message: `Stream ${stream.id} transferred successfully` });
+        return res.json({ message: 'Stream transferred successfully' });
+    } catch (error) {
+        console.error('Error transferring stream:', error);
+        return res.status(500).json({ error: 'Internal server error' });
     }
-
-    stream.owner = 'NewOwner';
-    stream.transferCode = null;
-
-    io.emit('streamUpdate', {message: `Stream ${stream.id} transferred successfully`});
-    return res.json({ message: 'Stream transferred successfully' });
-})
+});
 
 io.on('connection', (socket) => {
     console.log('A client connected');

@@ -32,7 +32,10 @@ function StreamStart() {
                 description: description,
                 category: category,
             };
-            await axios.post('http://localhost:5000/api/start-stream', streamData); 
+            console.log(streamData);
+            const response = await axios.post('http://localhost:5000/api/start-stream', streamData); 
+            const streamId = response.data.streamId;
+            console.log('Stream ID:', streamId);
         } catch (error) {
             console.error('Error accessing camera and microphone:', error);
         }

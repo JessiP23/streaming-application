@@ -2,12 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Stream = require('../models/Stream');
 
-// Initialize streams array
-let streams = [
-    { id: 1, title: 'Stream 1', description: 'Description for Stream 1' },
-    { id: 2, title: 'Stream 2', description: 'Description for Stream 2' },
-    { id: 3, title: 'Stream 3', description: 'Description for Stream 3' }
-];
 
 router.get('/', async (req, res) => {
     try {
@@ -19,11 +13,25 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const stream = await Stream.findById(id);
+        if (!stream) {
+            return res.status(404).json({ error: "Stream not found" });
+        }
+        res.json(stream);
+    } catch (error) {
+        console.error('Error fetching stream data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 // Route for creating a new stream
 router.post('/create', async (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, streamUrl } = req.body;
     try {
-        const newStream = new Stream({ title, description });
+        const newStream = new Stream({ title, description, streamUrl });
         const savedStream = await newStream.save();
         res.status(201).json(savedStream);
     } catch (error) {

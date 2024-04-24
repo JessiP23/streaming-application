@@ -10,6 +10,7 @@ import StreamerSecretCodeForm from './components/StreamerSecretCodeForm';
 import StreamInitiationModal from './components/StreamInitiationModal';
 import StreamDetails from './components/StreamDetails';
 import StreamPage from './components/StreamPage';
+import StreamStart from './components/StreamPage';
 
 function App() {
   return(
@@ -37,6 +38,7 @@ function App() {
           <Route path="/streams" element={<StreamList />} />
           <Route path="/stream-details/:id" element={<StreamPage />} />
           <Route path="/streams/:streamId" element={<StreamViewerPage />} />
+          <Route path="/stream-start" element={<StreamStart />} />
           <Route path="/viewers-dashboard" element={<ViewerDashboard />} />
           <Route path="/stream-transfer" element={<StreamTransferForm />} />
           <Route path="/streamer-secret-code" element={<StreamerSecretCodeForm />} />

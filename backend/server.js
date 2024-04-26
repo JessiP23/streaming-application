@@ -19,15 +19,17 @@ app.use(cors({
 }));
 
 app.post('/api/start-stream', async (req, res) => {
-    const { title, description, category, streamUrl } = req.body;
+    const { title, description, category } = req.body;
 
     try {
         const streamId = uuidv4();
+        const streamUrl = `http://localhost:5000/streams/${streamId}/stream`;
         const newStream = new Stream({
             streamId,
             title, 
             description,
             category,
+            streamUrl,
             owner: null,
             viewers: [],
             createdAt: new Date(),
@@ -87,6 +89,7 @@ app.get('/streams/:id', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.get('/streams/:id/transfer', async (req, res) => {
     const { id } = req.params;
@@ -157,3 +160,116 @@ app.use('/streams', streamRoutes);
 app.listen(5000, () => {
     console.log(`Server is running on port 5000`);
 });
+
+
+
+/*
+const express = require('express);
+const fs = require('fs');
+
+const app = express();
+
+const videoFileMap = {
+    'cdn': 'videos/cdn.np4',
+    'generate-pass': 'videos/generate-pass.np4',
+    'get-post': 'videos/get-post.np4',
+}
+
+app.get('/videos/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = videoFileMap[fileName]
+    if (!filePath) {
+        return res.status(404).send('File not found')
+    }
+
+    const stat = fs.statSync(filePath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+        const parts = range.replace(/bytes=/, '').split('-')
+        const start = parseInt(parts[0], 10);
+        const end = parseInt(parts[1], 10) : fileSize - 1;
+
+        const chunksize = end - start + 1;
+        const file = fs.createReadStream(filePath, {start, end});
+        const head = {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': 'video/mp4'
+        };
+        res.writeHead(206, head)
+        file.pipe(res);
+    }
+    else {
+        const head = {
+            'Content-Length': fileSize,
+            'Content-Type': 'video/mp4'
+        };
+        res.writeHead(200, head);
+        fs.createReadStream(filePath).pipe(res)
+    }
+})
+
+app.listen(3000, () => {
+    console.log("Server is listening on port 3000")
+})
+
+
+then is creates a videos folder where contains the videos to display
+
+
+
+
+FRONTEND
+
+VideoPlayer.jsx
+
+import React, {useRef, useEffect} from 'react';
+
+const videoPlayer = ({videoId}) => {
+    const videoRef = useRef(null);
+
+    useEffect(() => {
+        if (videoRef.current){
+
+        }
+    }, [])
+    return (
+        <video ref={videoRef} width='320' height='240' controls autoPlay>
+            <source src={`https://localhost:3000/videos/${videoId}`} type="video/mp4"></source>
+            Your browser does not support the video tag
+        </video>
+    )
+}
+
+export default videoPlayer;
+
+
+
+
+App.js
+import logo from './logo.svg'
+import './App.css'
+import {useState} from 'react';
+
+function App() {
+    const [videoId, setVideoId] = useState(null);
+    
+    function playVideo(e, videoId){
+        e.preventDefault()
+        setVideoId(videoId)
+    }
+
+    return (
+        <div className="App">
+            {videoId && <VideoPlayer videoId={videoId}></VideoPlayer>} <br />
+            <button onClick={(e, 'cdn') => {}}>Play video 1</button>
+            <button onClick={(e, 'generate-pass') => {}}>Play video 2</button>
+            <button onClick={(e, 'get-post') => {}}>Play video 3</button>
+        </div>
+    )
+}
+
+*/

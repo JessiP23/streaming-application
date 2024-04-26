@@ -1,3 +1,4 @@
+// StreamViewerPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
@@ -19,8 +20,6 @@ function StreamViewerPage() {
         }
     };
 
-    console.log('Stream Data:', streamData);
-
     if (!streamData) {
         return <div>Loading...</div>;
     }
@@ -31,7 +30,7 @@ function StreamViewerPage() {
             <h3>{streamData.title}</h3>
             <p>{streamData.description}</p>
             {streamData.streamUrl ? (
-                <video src={streamData.streamUrl} controls autoPlay />
+                <video src={streamData.streamUrl} type="video/mp4" controls autoPlay />
             ) : (
                 <div>No video available for this stream </div>
             )}
@@ -40,5 +39,4 @@ function StreamViewerPage() {
 }
 
 export default StreamViewerPage;
-
 

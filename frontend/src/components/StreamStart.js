@@ -31,6 +31,7 @@ function StreamStart() {
                 title: title,
                 description: description,
                 category: category,
+                stream: mediaStream,
             };
             console.log(streamData);
             const response = await axios.post('http://localhost:5000/api/start-stream', streamData); 

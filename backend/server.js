@@ -164,112 +164,160 @@ app.listen(5000, () => {
 
 
 /*
-const express = require('express);
-const fs = require('fs');
+yarn create vite livestream-broadcaster --template react-ts
+cd livestream-broadcaster
+yarn add @stream-io/video-react-sdk
 
-const app = express();
+video & audio
 
-const videoFileMap = {
-    'cdn': 'videos/cdn.np4',
-    'generate-pass': 'videos/generate-pass.np4',
-    'get-post': 'videos/get-post.np4',
-}
-
-app.get('/videos/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = videoFileMap[fileName]
-    if (!filePath) {
-        return res.status(404).send('File not found')
-    }
-
-    const stat = fs.statSync(filePath);
-    const fileSize = stat.size;
-    const range = req.headers.range;
-
-    if (range) {
-        const parts = range.replace(/bytes=/, '').split('-')
-        const start = parseInt(parts[0], 10);
-        const end = parseInt(parts[1], 10) : fileSize - 1;
-
-        const chunksize = end - start + 1;
-        const file = fs.createReadStream(filePath, {start, end});
-        const head = {
-            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-            'Accept-Ranges': 'bytes',
-            'Content-Length': chunksize,
-            'Content-Type': 'video/mp4'
-        };
-        res.writeHead(206, head)
-        file.pipe(res);
-    }
-    else {
-        const head = {
-            'Content-Length': fileSize,
-            'Content-Type': 'video/mp4'
-        };
-        res.writeHead(200, head);
-        fs.createReadStream(filePath).pipe(res)
-    }
-})
-
-app.listen(3000, () => {
-    console.log("Server is listening on port 3000")
-})
+yarn dev
 
 
-then is creates a videos folder where contains the videos to display
+App.tsx
 
+import './App.css';
+import {
+    User,
+    StreamVideoClient,
+    StreamVideo,
+    StreamCall,
+} from '@stream-io/video-react-sdk';
+import '@stream-io/video-react-sdk/dist/css/styles.css';
 
+const apiKey = 'mmhfdzb5evj2'
+const token =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiWW9kYSIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvWW9kYSIsImlhdCI6MTcxNDE0NzM4NywiZXhwIjoxNzE0NzUyMTkyfQ._JuohJsOGs7mek2zghSsDEKqj4bVTC_QDhNoplEVk6M'
+const userId = 'Yoda';
+cosnt callId = 'YC5hO2GH7hQN';
 
+const user: User = {
+    id: userId,
+    name: 'Jessi',
+    image: 'https://getstream.io/random_svg/?id=stefan&name=Stefan',
+};
 
-FRONTEND
-
-VideoPlayer.jsx
-
-import React, {useRef, useEffect} from 'react';
-
-const videoPlayer = ({videoId}) => {
-    const videoRef = useRef(null);
-
-    useEffect(() => {
-        if (videoRef.current){
-
-        }
-    }, [])
-    return (
-        <video ref={videoRef} width='320' height='240' controls autoPlay>
-            <source src={`https://localhost:3000/videos/${videoId}`} type="video/mp4"></source>
-            Your browser does not support the video tag
-        </video>
-    )
-}
-
-export default videoPlayer;
-
-
-
-
-App.js
-import logo from './logo.svg'
-import './App.css'
-import {useState} from 'react';
+const client = new StreamVideoClient({ apiKey, user, token });
+const call = client.call('livestream', callId);
+call.join({ create: true });
 
 function App() {
-    const [videoId, setVideoId] = useState(null);
-    
-    function playVideo(e, videoId){
-        e.preventDefault()
-        setVideoId(videoId)
-    }
-
     return (
-        <div className="App">
-            {videoId && <VideoPlayer videoId={videoId}></VideoPlayer>} <br />
-            <button onClick={(e, 'cdn') => {}}>Play video 1</button>
-            <button onClick={(e, 'generate-pass') => {}}>Play video 2</button>
-            <button onClick={(e, 'get-post') => {}}>Play video 3</button>
+        <StreamVideo client={client}>
+            <StreamCall call={call}>
+                <MyLivestreamUI />
+            </StreamCall>
+        </StreamVideo>
+    );
+}
+export default App;\
+
+export const MyLiveStreamI = () => {
+    const call = useCall();
+    const { useIsCallLive, useLocalParticipant, useParticipantCount, useCallEgress, } = useCallStateHooks();
+    const totalParticipats = useParticipantCount();
+    const localParticipant = useLocalParticipant();
+    const isCallLive = useIsCallLive();
+    const egress = useCallEgress();
+
+    ueseEffect(() => {
+        console.log('HSL playlist URL:', egress?.hls?.playlist_url);
+    }, [egress?.hls?.playlist_url]);
+
+    return(
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+            <div
+                style={{
+                    alignSelf: 'flex-start',
+                    color: 'white',
+                    backgroundColor: 'blue',
+                    borderRadius: '8px',
+                    padding: '4px 6px',
+                }}
+            >
+                Live: {totalParticipants}
+            </div>
+            <div style={{ flex: 1 }}>
+                {localParticipant && (
+                    <PartipantView
+                        participant = {localParticipant}
+                        ParticipantViewUI = {null}
+                    />
+                )}
+            </div>
+            <div style = {{ alignSelf: 'center' }}>
+                {isCallLive ? (
+                    <button onClick={() => call?.stopLive()}>Stop Livestream</button>
+                ) : (
+                    <button onClick = {() => call?.goLive({start_hls: true})}>Start LiveStream</button>
+                )}
+            </div>
         </div>
     )
+};
+
+
+    WE NEED AN API KEY
+    USER TOKEN
+    USER ID
+    CALL ID
+
+    To get those we go to REact LiveStream Tutorial
+
+    SFU Cascading
+    Routes each stream to SFU and optimize the streams, reduce latency
+
+
+after all this stteps:
+
+yarn create vite livestream-viewer --template react-ts
+cd livestream-viewer
+yarn add @stream-io/video-react-sdk
+yarn dev
+
+
+import './App.css';
+
+import {
+    LivestreamLayout,
+    StreamCall,
+    StreamVideo,
+    StreamVideoClient,
+    User,
+} from '@stream-io/video-react-sdk';
+import '@stream-io/video-react-sdk/dist/css/styles.css';
+
+const apiKey = 'mmhfdzb5evj2'
+const token =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiWW9kYSIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvWW9kYSIsImlhdCI6MTcxNDE0NzM4NywiZXhwIjoxNzE0NzUyMTkyfQ._JuohJsOGs7mek2zghSsDEKqj4bVTC_QDhNoplEVk6M'
+const userId = 'Yoda';
+cosnt callId = 'YC5hO2GH7hQN';
+
+const user: User = {
+    id: userId,
+    name: 'Oliver-Viewer',
+    image: 'https://getstream.io/random_svg/?id=oliver&name=Oliver-Viewer',
+};
+
+const client = new StreamVideoClient({ apiKey, user, token });
+const call = client.call('livestream', callId);
+
+call.camera.disable();
+call.microphone.disable();
+
+call.join();
+
+export const App = () => {
+    return (
+        <StreamVideo client = {client}>
+            <StreamCall call={call}>
+                <LiveStreamLayout
+                    showParticipantCount={true}
+                    showDuration={true}
+                    showLiveBadge={true}
+                />
+            </StreamCall>
+        </StremVideo>
+    )
 }
+
+yarn dev
 
 */

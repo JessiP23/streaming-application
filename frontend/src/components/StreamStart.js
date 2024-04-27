@@ -1,5 +1,22 @@
 import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
+import { User, StreamVideoClient, StreamVideo, StreamCall } from '@stream-io/video-react-sdk';
+import '@stream-io/video-react-sdk/dist/css/styles.css';
+
+const apiKey = 'mmhfdzb5evj2';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiWW9kYSIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvWW9kYSIsImlhdCI6MTcxNDE0NzM4NywiZXhwIjoxNzE0NzUyMTkyfQ._JuohJsOGs7mek2zghSsDEKqj4bVTC_QDhNoplEVk6M';
+const userId = 'Yoda';
+const callId = 'YC5hO2GH7hQN';
+
+const user = {
+    id: userId,
+    name: 'Stefan',
+    image: 'https://getstream.io/random_svg/?id=stefan&name=Stefan',
+};
+
+const client = new StreamVideoClient({ apiKey, user, token });
+const call = client.call('livestream', callId);
+call.join({ create: true });
 
 function StreamStart() {
     const [streaming, setStreaming] = useState(false);
@@ -62,6 +79,9 @@ function StreamStart() {
                         <input type='text' id='description' value={description} onChange={(e) => setDescription(e.target.value)} />
                         <label htmlFor='category'>Category:</label>
                         <input type='text' id='category' value={category} onChange={(e) => setCategory(e.target.value)} />
+                        <button onClick={handleStartStream}>Start Streaming</button>
+                        <label htmlFor='shareScreen'>Share Screen</label>
+                        <input type='checkbox' id='shareScreen' checked={sharingScreen} onChange={() => setSharingScreen(!sharingScreen)} />
                         <button onClick={handleStartStream}>Start Streaming</button>
                         <label htmlFor='shareScreen'>Share Screen</label>
                         <input type='checkbox' id='shareScreen' checked={sharingScreen} onChange={() => setSharingScreen(!sharingScreen)} />

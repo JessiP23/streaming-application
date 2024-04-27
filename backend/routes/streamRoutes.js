@@ -27,6 +27,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+
 // Route for creating a new stream
 router.post('/create', async (req, res) => {
     const { title, description, streamUrl } = req.body;

@@ -2,6 +2,27 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
+import { StreamVideoClient, StreamVideo, StreamCall, LivestreamLayout } from '@stream-io/video-react-sdk';
+import '@stream-io/video-react-sdk/dist/css/styles.css';
+
+const apiKey = 'mmhfdzb5evj2';
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiWW9kYSIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvWW9kYSIsImlhdCI6MTcxNDE0NzM4NywiZXhwIjoxNzE0NzUyMTkyfQ._JuohJsOGs7mek2zghSsDEKqj4bVTC_QDhNoplEVk6M';
+const userId = 'Yoda';
+const callId = 'YC5hO2GH7hQN';
+
+const user = {
+    id: userId,
+    name: 'Oliver-Viewer',
+    image: 'https://getstream.io/random_svg/?id=oliver&name=Oliver-Viewer',
+};
+
+const client = new StreamVideoClient({ apiKey, user, token });
+const call = client.call('livestream', callId);
+
+call.camera.disable();
+call.microphone.disable();
+
+call.join();
 
 function StreamViewerPage() {
     const { streamId } = useParams();
@@ -25,16 +46,15 @@ function StreamViewerPage() {
     }
 
     return (
-        <div>
-            <h2>Stream Viewer</h2>
-            <h3>{streamData.title}</h3>
-            <p>{streamData.description}</p>
-            {streamData.streamUrl ? (
-                <video src={streamData.streamUrl} type="video/mp4" controls autoPlay />
-            ) : (
-                <div>No video available for this stream </div>
-            )}
-        </div>
+        <StreamVideo client={client}>
+            <StreamCall call={call}>
+                <LivestreamLayout
+                    showParticipationCount={true}
+                    showDuration={true}
+                    showLiveBadge={true}
+                />
+            </StreamCall>
+        </StreamVideo>
     );
 }
 

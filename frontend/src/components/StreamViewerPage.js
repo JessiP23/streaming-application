@@ -1,8 +1,7 @@
-// StreamViewerPage.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
-import { StreamVideoClient, StreamVideo, StreamCall, LivestreamLayout } from '@stream-io/video-react-sdk';
+import { User, StreamVideoClient, StreamVideo, StreamCall, LivestreamLayout } from '@stream-io/video-react-sdk';
 import '@stream-io/video-react-sdk/dist/css/styles.css';
 
 const apiKey = 'mmhfdzb5evj2';
@@ -59,4 +58,3 @@ function StreamViewerPage() {
 }
 
 export default StreamViewerPage;
-

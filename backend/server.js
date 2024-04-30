@@ -101,7 +101,7 @@ app.get('/streams/:id/transfer', async (req, res) => {
         if (stream.transferCode){
             return res.status(400).json({ error: "Stream already has a transfer code" });
         }
-        const trasnferCode = generateTransferCode();
+        const transferCode = generateTransferCode();
         stream.transferCode = transferCode;
         await stream.save();
         return res.json({ transferCode });

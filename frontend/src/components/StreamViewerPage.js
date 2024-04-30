@@ -18,7 +18,6 @@ const user = {
 const client = new StreamVideoClient({ apiKey, user, token });
 const call = client.call('livestream', callId);
 
-call.camera.disable();
 call.microphone.disable();
 
 call.join();
@@ -26,6 +25,7 @@ call.join();
 function StreamViewerPage() {
     const { streamId } = useParams();
     const [streamData, setStreamData] = useState(null);
+    const [cameraOn, setCameraOn] = useState(false);
 
     useEffect(() => {
         fetchStreamData(streamId);
@@ -34,11 +34,23 @@ function StreamViewerPage() {
     const fetchStreamData = async (streamId) => {
         try {
             const response = await axios.get(`http://localhost:5000/streams/${streamId}`);
+            const { cameraOn } = response.data;
             setStreamData(response.data);
+            setCameraOn(response.data.cameraOn);
         } catch (error) {
             console.error('Error fetching stream data:', error);
         }
     };
+
+    useEffect(() => {
+        if (cameraOn) {
+            call.camera.enable();
+        } else {
+            call.camera.disable();
+        }
+    }, [cameraOn]);
+
+
 
     if (!streamData) {
         return <div>Loading...</div>;

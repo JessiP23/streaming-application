@@ -15,7 +15,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors({
     origin: "http://localhost:3000",
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.post('/api/start-stream', async (req, res) => {
@@ -157,7 +158,8 @@ mongoose.connect(MONGODB_URI, {
 const streamRoutes = require('./routes/streamRoutes');
 app.use('/streams', streamRoutes);
 
-app.listen(5000, () => {
+const PORT = 5000;
+app.listen(PORT, () => {
     console.log(`Server is running on port 5000`);
 });
 

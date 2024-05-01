@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import StreamInitiationModal from "./StreamInitiationModal";
 import WebSocketComponent from "./WebSocket";
 import StreamStart from "./StreamStart";
 import StreamTransferForm from "./StreamTransferForm";
@@ -22,7 +21,7 @@ function ViewerDashboard() {
     return (
         <div>
             <h2>Viewer Dashboard</h2>
-            {isModalOpen && <StreamInitiationModal onClose={handleCloseModal} /> }
+            {isModalOpen }
             <WebSocketComponent />
             {isStreamStarted && <StreamViewerPage />}
             <StreamTransferForm />

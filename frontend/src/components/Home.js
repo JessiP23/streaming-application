@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import StreamList from './StreamList'; // Import StreamList component
+import StreamList from './StreamList';
 
 function Home() {
   return (

@@ -9,16 +9,11 @@ const StreamStart = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
+    const [streams, setStreams] = useState([]); // State for stream list
     const videoRef = useRef(null);
 
-    useEffect(() => {
-        if (streaming) {
-            startStream();
-        }
-    }, [streaming]);
-
-    const startStream = async () => {
-        try {
+    const handleStartStream = async () => {
+        try{
             let mediaStream;
             if (sharingScreen) {
                 mediaStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
@@ -26,24 +21,17 @@ const StreamStart = () => {
                 mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             }
             setStream(mediaStream);
-            const streamData = {
-                title: title,
-                description: description,
-                category: category,
-                stream: mediaStream,
-            };
-            console.log(streamData);
-            const response = await axios.post('http://localhost:5000/api/start-stream', streamData);
-            const streamId = response.data.streamId;
-            console.log('Stream ID:', streamId);
+            setStreaming(true);
+
+            await axios.post('http://localhost:5000/api/start-stream', {
+                title,
+                description,
+                category
+            });
         } catch (error) {
             console.error('Error accessing camera and microphone:', error);
         }
-    };
-
-    const handleStartStream = () => {
-        setStreaming(true);
-    };
+    }; 
 
     const handleStopStream = () => {
         if (stream) {
@@ -54,10 +42,10 @@ const StreamStart = () => {
     };
 
     useEffect(() => {
-        if (videoRef.current && stream) {
+        if (streaming && videoRef.current && stream) {
             videoRef.current.srcObject = stream;
         }
-    }, [stream]);
+    }, [streaming, stream]);
 
     return (
         <div>
@@ -77,7 +65,7 @@ const StreamStart = () => {
                         <Link to='/'>Stop Streaming</Link>
                     </>
                 ) : (
-                    <div> {/* Render the video stream here */}
+                    <div> 
                         <video ref={videoRef} autoPlay muted />
                         <button onClick={handleStopStream}>Stop Streaming</button>
                     </div>

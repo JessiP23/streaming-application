@@ -1,26 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
-import { User, StreamVideoClient, StreamVideo, StreamCall, LivestreamLayout } from '@stream-io/video-react-sdk';
+import { LivestreamLayout } from '@stream-io/video-react-sdk';
 import '@stream-io/video-react-sdk/dist/css/styles.css';
-
-const apiKey = 'mmhfdzb5evj2';
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiWW9kYSIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvWW9kYSIsImlhdCI6MTcxNDE0NzM4NywiZXhwIjoxNzE0NzUyMTkyfQ._JuohJsOGs7mek2zghSsDEKqj4bVTC_QDhNoplEVk6M';
-const userId = 'Yoda';
-const callId = 'YC5hO2GH7hQN';
-
-const user = {
-    id: userId,
-    name: 'Oliver-Viewer',
-    image: 'https://getstream.io/random_svg/?id=oliver&name=Oliver-Viewer',
-};
-
-const client = new StreamVideoClient({ apiKey, user, token });
-const call = client.call('livestream', callId);
-
-call.microphone.disable();
-
-call.join();
 
 function StreamViewerPage() {
     const { streamId } = useParams();
@@ -36,36 +18,43 @@ function StreamViewerPage() {
             const response = await axios.get(`http://localhost:5000/streams/${streamId}`);
             const { cameraOn } = response.data;
             setStreamData(response.data);
-            setCameraOn(response.data.cameraOn);
+            setCameraOn(cameraOn);
         } catch (error) {
             console.error('Error fetching stream data:', error);
         }
     };
 
     useEffect(() => {
+        // Enable or disable camera based on cameraOn state
         if (cameraOn) {
-            call.camera.enable();
+            // Enable camera
+            console.log('Camera enabled');
         } else {
-            call.camera.disable();
+            // Disable camera
+            console.log('Camera disabled');
         }
     }, [cameraOn]);
-
-
 
     if (!streamData) {
         return <div>Loading...</div>;
     }
 
     return (
-        <StreamVideo client={client}>
-            <StreamCall call={call}>
-                <LivestreamLayout
-                    showParticipationCount={true}
-                    showDuration={true}
-                    showLiveBadge={true}
-                />
-            </StreamCall>
-        </StreamVideo>
+        <div>
+            {cameraOn ? (
+                <div>
+                    <h1>Stream Video</h1>
+                    {/* Include your video player component here */}
+                    <LivestreamLayout
+                        showParticipationCount={true}
+                        showDuration={true}
+                        showLiveBadge={true}
+                    />
+                </div>
+            ) : (
+                <div>Stream Not Live</div>
+            )}
+        </div>
     );
 }
 

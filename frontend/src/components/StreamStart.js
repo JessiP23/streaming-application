@@ -28,6 +28,8 @@ const StreamStart = () => {
                 description,
                 category
             });
+
+            setStreams(prevStreams => [...prevStreams, {title, description, category}]);
         } catch (error) {
             console.error('Error accessing camera and microphone:', error);
         }
